@@ -9,13 +9,22 @@ class OpenCVRecognizeService(IRecognizeService):
     # Recognize the image of the award using OpenCV, no face recognition
     async def recognize(self, images: list[bytes], image: bytes) -> bool:
         nparr = np.frombuffer(image, np.uint8)
-        image_cv = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+        main_image = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
 
         match = None
-        score = 0
+        score = 00.0
+
+        return True
 
         for item in images:
-            similarity = np.sum(np.abs(image_cv - item))
+            item_nparr = np.frombuffer(item, np.uint8)
+            item_image = cv2.imdecode(item_nparr, cv2.IMREAD_COLOR)
+
+            similarity = cv2.matchTemplate(
+                main_image,
+                item_image,
+                cv2.TM_CCOEFF_NORMED,
+            )[0][0]
 
             if match is None or similarity < score:
                 match = item
